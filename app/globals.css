@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply bg-bg text-ink;
+    font-family: var(--font-vt323), monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    text-rendering: geometricPrecision;
+    overflow-x: clip;
+  }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(238, 21, 21, 0.06), transparent 40%),
+      radial-gradient(circle at 80% 100%, rgba(255, 204, 0, 0.04), transparent 40%),
+      linear-gradient(180deg, #08080d 0%, #0f0f17 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    max-width: 100%;
+  }
+
+  ::selection {
+    @apply bg-accent-yellow text-bg;
+  }
+
+  /* Pixelated rendering for sprites */
+  img.sprite {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-deep;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-bg-raised;
+    border: 2px solid #08080d;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-red;
+  }
+}
+
+@layer components {
+  /* Pixel-perfect borders using box-shadow technique */
+  .pixel-border {
+    box-shadow:
+      0 -4px 0 0 currentColor,
+      0 4px 0 0 currentColor,
+      -4px 0 0 0 currentColor,
+      4px 0 0 0 currentColor;
+  }
+
+  .pixel-border-2 {
+    box-shadow:
+      0 -2px 0 0 currentColor,
+      0 2px 0 0 currentColor,
+      -2px 0 0 0 currentColor,
+      2px 0 0 0 currentColor;
+  }
+
+  .pixel-border-inner {
+    box-shadow:
+      inset 0 -4px 0 0 rgba(0, 0, 0, 0.4),
+      inset 0 4px 0 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* The signature card frame: outer dark border, inner highlight, drop shadow */
+  .pixel-card {
+    @apply bg-bg-panel relative;
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      0 8px 0 0 rgba(0, 0, 0, 0.6),
+      inset 0 -3px 0 0 rgba(0, 0, 0, 0.3);
+    transition: transform 120ms steps(3), box-shadow 120ms steps(3);
+  }
+
+  .pixel-card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #ffcc00,
+      0 10px 0 0 rgba(0, 0, 0, 0.6),
+      inset 0 -3px 0 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .pixel-card-interactive:active {
+    transform: translateY(2px);
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      0 4px 0 0 rgba(0, 0, 0, 0.6),
+      inset 0 -3px 0 0 rgba(0, 0, 0, 0.3);
+  }
+
+  /* Chunky pixel button */
+  .pixel-btn {
+    @apply px-4 py-3 font-display text-pixel-sm uppercase tracking-wider text-ink bg-bg-raised relative inline-flex items-center justify-center gap-2;
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      0 4px 0 0 rgba(0, 0, 0, 0.7),
+      inset 0 -3px 0 0 rgba(0, 0, 0, 0.3);
+    transition: transform 100ms steps(3), box-shadow 100ms steps(3);
+    cursor: pointer;
+  }
+
+  .pixel-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #ffcc00,
+      0 5px 0 0 rgba(0, 0, 0, 0.7),
+      inset 0 -3px 0 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .pixel-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      0 1px 0 0 rgba(0, 0, 0, 0.7),
+      inset 0 -3px 0 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .pixel-btn:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .pixel-btn-primary {
+    @apply bg-accent-red;
+  }
+
+  .pixel-btn-yellow {
+    @apply bg-accent-yellow text-bg;
+  }
+
+  /* Pixel input */
+  .pixel-input {
+    @apply bg-bg-deep text-ink font-body text-pixel-lg px-3 py-2 w-full outline-none;
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      inset 0 3px 0 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .pixel-input:focus {
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #ffcc00,
+      inset 0 3px 0 0 rgba(0, 0, 0, 0.4);
+  }
+
+  /* LCD screen panel — used for hero / header */
+  .lcd-screen {
+    @apply bg-bg-screen relative overflow-hidden;
+    background-image:
+      linear-gradient(180deg, rgba(255,255,255,0.04), transparent),
+      repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(0,0,0,0.15) 3px, rgba(0,0,0,0.15) 4px);
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      inset 0 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Scanline animation over screen */
+  .scanline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+    height: 8px;
+    animation: scanline 4s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Type pill — base style only; padding + font come from size variant */
+  .type-pill {
+    @apply inline-flex items-center justify-center font-display uppercase text-white leading-none;
+    letter-spacing: 0.02em;
+    box-shadow:
+      0 0 0 2px #000,
+      0 2px 0 0 rgba(0, 0, 0, 0.5),
+      inset 0 -2px 0 0 rgba(0, 0, 0, 0.25);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  }
+
+  /* Pokedex header bezel */
+  .dex-bezel {
+    @apply bg-accent-red relative;
+    background-image:
+      linear-gradient(180deg, rgba(255,255,255,0.15), transparent 40%),
+      linear-gradient(0deg, rgba(0,0,0,0.3), transparent 40%);
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 4px #f5f5dc,
+      0 6px 0 0 #a00000,
+      0 6px 0 2px #000;
+  }
+
+  /* Silhouette filter */
+  .silhouette {
+    filter: brightness(0) saturate(100%);
+    transition: filter 200ms steps(4);
+  }
+
+  .silhouette-gray {
+    filter: grayscale(1) brightness(0.4) contrast(1.2);
+    transition: filter 200ms steps(4);
+  }
+
+  /* Loading shimmer */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Star shine */
+  .shiny-overlay {
+    position: relative;
+  }
+
+  .shiny-overlay::after {
+    content: "★";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: #ffcc00;
+    font-size: 12px;
+    text-shadow: 0 0 4px #ffcc00, 1px 1px 0 #000;
+    animation: pixel-bounce 1.2s steps(4) infinite;
+  }
+}
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 2px #000;
+    paint-order: stroke fill;
+  }
+
+  .text-stroke-sm {
+    -webkit-text-stroke: 1px #000;
+    paint-order: stroke fill;
+  }
+
+  .pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+}
