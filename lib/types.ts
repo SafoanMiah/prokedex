@@ -39,6 +39,7 @@ export interface PokemonEntry {
 
 export interface CollectionSettings {
   silhouette: boolean;
+  showNames: boolean;
   guessMode: boolean;
   sort: "dex" | "alpha" | "claimed-first" | "claimed-recent" | "type" | "shuffle";
   filter: "all" | "claimed" | "unclaimed" | "favorites";
@@ -49,6 +50,7 @@ export interface CollectionSettings {
 
 export const DEFAULT_SETTINGS: CollectionSettings = {
   silhouette: false,
+  showNames: false,
   guessMode: true,
   sort: "dex",
   filter: "all",

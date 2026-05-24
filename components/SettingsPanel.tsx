@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { POKEMON_TYPES, type CollectionSettings, type PokemonType } from "@/lib/types";
 import { TypePill } from "./TypePill";
 
@@ -8,11 +8,12 @@ interface Props {
   settings: CollectionSettings;
   onChange: (patch: Partial<CollectionSettings>) => void;
   onExport: () => void;
+  onImport: (file: File) => void;
   onClose: () => void;
   canEdit: boolean;
 }
 
-export function SettingsPanel({ settings, onChange, onExport, onClose, canEdit }: Props) {
+export function SettingsPanel({ settings, onChange, onExport, onImport, onClose, canEdit }: Props) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -35,6 +36,13 @@ export function SettingsPanel({ settings, onChange, onExport, onClose, canEdit }
         </div>
 
         <Section title="display">
+          <ToggleRow
+            label="show names"
+            help="reveals the name under each sprite (spoils the guess)"
+            value={settings.showNames}
+            onChange={(v) => onChange({ showNames: v })}
+            disabled={!canEdit}
+          />
           <ToggleRow
             label="silhouette unclaimed"
             help="hide unclaimed pokemon as shadows"
@@ -113,6 +121,12 @@ export function SettingsPanel({ settings, onChange, onExport, onClose, canEdit }
           <button onClick={onExport} className="pixel-btn w-full">
             ↓ EXPORT JSON
           </button>
+          <ImportButton onPick={onImport} disabled={!canEdit} />
+          {!canEdit && (
+            <p className="font-body text-pixel-base text-ink-mute">
+              unlock with pin to import
+            </p>
+          )}
         </Section>
 
         {!canEdit && (
@@ -122,6 +136,32 @@ export function SettingsPanel({ settings, onChange, onExport, onClose, canEdit }
         )}
       </div>
     </div>
+  );
+}
+
+function ImportButton({ onPick, disabled }: { onPick: (file: File) => void; disabled: boolean }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <input
+        ref={ref}
+        type="file"
+        accept="application/json,.json"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) onPick(f);
+          if (ref.current) ref.current.value = "";
+        }}
+      />
+      <button
+        onClick={() => ref.current?.click()}
+        disabled={disabled}
+        className="pixel-btn w-full"
+      >
+        ↑ IMPORT JSON
+      </button>
+    </>
   );
 }
 

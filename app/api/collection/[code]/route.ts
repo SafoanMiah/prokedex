@@ -107,6 +107,7 @@ function sanitizeUpsert(prev: PokemonEntry | undefined, patch: Partial<PokemonEn
 function sanitizeSettings(prev: CollectionSettings, patch: Partial<CollectionSettings>): CollectionSettings {
   const next = { ...prev };
   if (typeof patch.silhouette === "boolean") next.silhouette = patch.silhouette;
+  if (typeof patch.showNames === "boolean") next.showNames = patch.showNames;
   if (typeof patch.guessMode === "boolean") next.guessMode = patch.guessMode;
   if (patch.sort && ["dex", "alpha", "claimed-first", "claimed-recent", "type", "shuffle"].includes(patch.sort)) {
     next.sort = patch.sort;

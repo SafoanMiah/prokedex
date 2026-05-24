@@ -11,11 +11,22 @@ interface Props {
   idx: number;
   entry: PokemonEntry | undefined;
   silhouette: boolean;
+  showNames: boolean;
   density: "cozy" | "compact";
   onClick: () => void;
 }
 
-function PokemonCardBase({ slug: _slug, file, displayName, idx, entry, silhouette, density, onClick }: Props) {
+function PokemonCardBase({
+  slug: _slug,
+  file,
+  displayName,
+  idx,
+  entry,
+  silhouette,
+  showNames,
+  density,
+  onClick,
+}: Props) {
   const claimed = !!entry;
   const showName = entry?.name || displayName;
   const types: PokemonType[] = entry?.types ?? [];
@@ -52,13 +63,15 @@ function PokemonCardBase({ slug: _slug, file, displayName, idx, entry, silhouett
         />
       </div>
 
-      <div className="w-full min-h-[24px] flex items-center justify-center">
-        <h3
-          className={`font-display ${density === "compact" ? "text-pixel-xs" : "text-pixel-xs"} uppercase tracking-wider truncate max-w-full ${claimed ? "text-ink" : "text-ink-mute"}`}
-        >
-          {isSilhouette ? "???" : showName}
-        </h3>
-      </div>
+      {(isSilhouette || showNames) && (
+        <div className="w-full min-h-[20px] flex items-center justify-center">
+          <h3
+            className={`font-display text-pixel-xs uppercase tracking-wider truncate max-w-full ${claimed ? "text-ink" : "text-ink-mute"}`}
+          >
+            {isSilhouette ? "???" : showName}
+          </h3>
+        </div>
+      )}
 
       {types.length > 0 && !isSilhouette && (
         <div className="flex gap-1 flex-wrap justify-center">
@@ -68,7 +81,7 @@ function PokemonCardBase({ slug: _slug, file, displayName, idx, entry, silhouett
         </div>
       )}
 
-      {!claimed && !isSilhouette && (
+      {!claimed && !isSilhouette && showNames && (
         <div className="font-display text-pixel-xs text-ink-mute opacity-60">unclaimed</div>
       )}
     </button>

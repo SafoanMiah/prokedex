@@ -272,6 +272,95 @@ export function CollectionView({ code, initialCollection, sprites }: Props) {
     URL.revokeObjectURL(url);
   }
 
+  async function handleImport(file: File) {
+    if (!pin) {
+      alert("unlock with pin first to import");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      alert("file too large (max 2mb)");
+      return;
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch {
+      alert("invalid json file");
+      return;
+    }
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      typeof (parsed as { pokemon?: unknown }).pokemon !== "object"
+    ) {
+      alert("missing 'pokemon' field — doesn't look like a prokedex export");
+      return;
+    }
+
+    const p = parsed as {
+      pokemon: Record<string, unknown>;
+      settings?: Partial<CollectionSettings>;
+      name?: unknown;
+    };
+
+    const validSlugs = new Set(sprites.map((s) => s.slug));
+    const upserts: Record<string, Partial<PokemonEntry>> = {};
+    let skipped = 0;
+    for (const [slug, raw] of Object.entries(p.pokemon)) {
+      if (!validSlugs.has(slug) || !raw || typeof raw !== "object") {
+        skipped++;
+        continue;
+      }
+      const r = raw as Record<string, unknown>;
+      const entry: Partial<PokemonEntry> = {};
+      if (typeof r.name === "string") entry.name = r.name;
+      if (Array.isArray(r.types)) entry.types = r.types as PokemonType[];
+      if (typeof r.description === "string") entry.description = r.description;
+      if (typeof r.favorite === "boolean") entry.favorite = r.favorite;
+      if (typeof r.shiny === "boolean") entry.shiny = r.shiny;
+      if (r.stats && typeof r.stats === "object") {
+        entry.stats = r.stats as PokemonEntry["stats"];
+      }
+      upserts[slug] = entry;
+    }
+
+    const importedSlugs = Object.keys(upserts);
+    const currentSlugs = Object.keys(collection.pokemon);
+    const deletes = currentSlugs.filter((s) => !(s in upserts));
+
+    const ok = window.confirm(
+      "import will:\n" +
+        `• add/update ${importedSlugs.length} pokemon\n` +
+        `• release ${deletes.length} current entries not in file\n` +
+        (skipped > 0 ? `• skip ${skipped} invalid entries\n` : "") +
+        "\ncontinue?"
+    );
+    if (!ok) return;
+
+    const body: Record<string, unknown> = {
+      pin,
+      pokemonUpserts: upserts,
+      pokemonDeletes: deletes,
+    };
+    if (p.settings && typeof p.settings === "object") body.settings = p.settings;
+    if (typeof p.name === "string" && p.name.trim()) body.name = p.name.trim();
+
+    try {
+      const res = await fetch(`/api/collection/${code}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "import failed");
+      if (data.collection) setCollection(data.collection);
+      alert(`✓ imported ${importedSlugs.length} entries`);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "import failed");
+    }
+  }
+
   const openEntry = openSlug ? collection.pokemon[openSlug] : undefined;
   const openSprite = openSlug ? sprites.find((s) => s.slug === openSlug) : undefined;
   const guessSprite = showGuessFor ? sprites.find((s) => s.slug === showGuessFor) : undefined;
@@ -424,6 +513,7 @@ export function CollectionView({ code, initialCollection, sprites }: Props) {
                 idx={s.idx}
                 entry={collection.pokemon[s.slug]}
                 silhouette={settings.silhouette}
+                showNames={settings.showNames}
                 density={settings.density}
                 onClick={() => onCardClick(s.slug)}
               />
@@ -489,6 +579,7 @@ export function CollectionView({ code, initialCollection, sprites }: Props) {
           settings={settings}
           onChange={updateSettings}
           onExport={exportJson}
+          onImport={handleImport}
           onClose={() => setShowSettings(false)}
           canEdit={canEdit}
         />
