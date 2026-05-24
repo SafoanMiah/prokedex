@@ -81,7 +81,7 @@ function Logo() {
     <div className="flex flex-col items-center gap-3">
       <div className="dex-bezel px-6 py-4 inline-flex items-center gap-4">
         <h1 className="font-display text-pixel-2xl tracking-widest text-ink text-stroke">
-          PROKEDEX
+          prokedeck
         </h1>
         <div className="flex gap-1">
           <div className="w-2 h-2 bg-accent-yellow shadow-pixel-sm" />

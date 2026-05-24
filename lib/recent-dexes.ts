@@ -4,7 +4,7 @@ export interface RecentDex {
   lastVisitedAt: string;
 }
 
-const KEY = "prokedex:recent";
+const KEY = "prokedeck:recent";
 const MAX = 20;
 
 export function getRecent(): RecentDex[] {

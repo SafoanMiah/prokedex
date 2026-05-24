@@ -267,7 +267,7 @@ export function CollectionView({ code, initialCollection, sprites }: Props) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `prokedex-${code}.json`;
+    a.download = `prokedeck-${code}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -288,7 +288,7 @@ export function CollectionView({ code, initialCollection, sprites }: Props) {
               aria-label="home"
             >
               <span className="font-display text-pixel-sm text-ink tracking-widest">
-                PROKEDEX
+                prokedeck
               </span>
             </button>
             <div className="flex items-center min-w-0 gap-2">

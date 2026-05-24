@@ -17,10 +17,10 @@ const vt323 = VT323({
 });
 
 export const metadata: Metadata = {
-  title: "Prokedex",
+  title: "prokedeck",
   description: "Claim, name, and customize your own Pokedex. 898 sprites waiting.",
   openGraph: {
-    title: "Prokedex",
+    title: "prokedeck",
     description: "Your own pixel-perfect Pokedex.",
   },
   icons: {

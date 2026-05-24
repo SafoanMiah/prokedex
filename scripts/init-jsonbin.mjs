@@ -55,7 +55,7 @@ const res = await fetch("https://api.jsonbin.io/v3/b", {
   headers: {
     "Content-Type": "application/json",
     "X-Master-Key": MASTER_KEY,
-    "X-Bin-Name": "prokedex",
+    "X-Bin-Name": "prokedeck",
     "X-Bin-Private": "false",
   },
   body: JSON.stringify(initial),
