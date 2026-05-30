@@ -13,6 +13,7 @@ interface Props {
   idx: number;
   entry: PokemonEntry | undefined;
   canEdit: boolean;
+  showNames: boolean;
   initialTypes?: PokemonType[];
   onSave: (patch: Partial<PokemonEntry>) => Promise<void>;
   onRelease: () => Promise<void>;
@@ -40,12 +41,13 @@ export function EditModal({
   idx,
   entry,
   canEdit,
+  showNames,
   initialTypes,
   onSave,
   onRelease,
   onClose,
 }: Props) {
-  const [name, setName] = useState(entry?.name ?? displayName);
+  const [name, setName] = useState(entry?.name ?? (showNames ? displayName : ""));
   const [types, setTypes] = useState<PokemonType[]>(entry?.types ?? initialTypes ?? []);
   const [description, setDescription] = useState(entry?.description ?? "");
   const [stats, setStats] = useState(entry?.stats ?? { hp: 50, atk: 50, def: 50, spd: 50 });
@@ -72,7 +74,7 @@ export function EditModal({
     setBusy(true);
     try {
       const patch: Partial<PokemonEntry> = {
-        name: name.trim() || displayName,
+        name: name.trim() || (showNames ? displayName : ""),
         favorite,
         shiny,
       };
@@ -121,10 +123,12 @@ export function EditModal({
             className={`sprite max-h-32 lg:max-h-44 ${shiny ? "drop-shadow-[0_0_12px_rgba(255,204,0,0.7)]" : ""}`}
             style={{ imageRendering: "pixelated" }}
           />
-          <div className="flex flex-col items-center gap-0.5">
-            <div className="font-display text-pixel-base text-ink uppercase">{displayName}</div>
-            <div className="font-body text-pixel-base text-ink-mute">{slug}</div>
-          </div>
+          {showNames && (
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="font-display text-pixel-base text-ink uppercase">{displayName}</div>
+              <div className="font-body text-pixel-base text-ink-mute">{slug}</div>
+            </div>
+          )}
         </aside>
 
         {/* Form column */}
@@ -138,10 +142,12 @@ export function EditModal({
                 value={name}
                 maxLength={24}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={displayName}
+                placeholder={showNames ? displayName : "name this pokemon..."}
               />
             ) : (
-              <div className="font-display text-pixel-lg text-ink">{entry?.name ?? displayName}</div>
+              <div className="font-display text-pixel-lg text-ink">
+                {entry?.name ?? (showNames ? displayName : "???")}
+              </div>
             )}
           </Field>
 

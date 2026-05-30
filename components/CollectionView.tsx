@@ -553,6 +553,7 @@ export function CollectionView({ code, initialCollection, sprites }: Props) {
           idx={openSprite.idx}
           entry={openEntry}
           canEdit={canEdit}
+          showNames={settings.showNames}
           initialTypes={
             pendingClaim && pendingClaim.slug === openSprite.slug ? pendingClaim.guess : undefined
           }
